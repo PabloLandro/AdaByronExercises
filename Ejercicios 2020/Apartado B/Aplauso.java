@@ -11,6 +11,10 @@ public class Aplauso {
         duracion = new int[personas];
         minimo = new int[personas];
         aplaudiendo = new boolean[personas];
+        //inicializar aplaudiendo a true
+        for (int i = 0; i < personas; i++) {
+            aplaudiendo[i] = true;
+        }
     }
 
 }

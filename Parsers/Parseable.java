@@ -1,5 +1,10 @@
 
+public abstract class Parseable {
+    protected Parseable() {
+    }
 
-public interface Parseable {
-    public void parse(String line);
+    // Devuelve un nuevo objeto de la clase que implementa parseando la línea
+    public static Parseable parse(String line) {
+        return null;
+    }
 }

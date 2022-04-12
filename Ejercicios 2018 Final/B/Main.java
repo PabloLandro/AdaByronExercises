@@ -4,6 +4,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 public class Main {
+    // primer nacional resuelto!
+    // fue dificil pero bastante interesante
+    // el tiempo asintótico del algoritmo es O(F), se podria mejorar la velocidad de
+    // cada figura cambiando el planteamiento de la resolución de piezas pero así va
+    // bastante bien
+    // te dejo convertir todo esto a lambdas Xiana, ily <3
     public static void main(String[] args) {
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(new FileInputStream("Ejercicios 2018 Final\\B\\input.txt")));
@@ -18,11 +24,11 @@ public class Main {
 
                 C = Integer.parseInt(campos[0]);
                 N = Integer.parseInt(campos[1]);
-                FiguraP[] figuras = new FiguraP[N];
+                Figura[] figuras = new Figura[N];
                 for (int i = 0; i < N; i++) {
                     linea = br.readLine();
                     campos = linea.split(" ");
-                    figuras[i] = new FiguraP(Integer.parseInt(campos[0]),
+                    figuras[i] = new Figura(Integer.parseInt(campos[0]),
                             Integer.parseInt(campos[1]),
                             Integer.parseInt(campos[2]) - 1);
                 }
@@ -37,87 +43,65 @@ public class Main {
         }
     }
 
-    private static int[] solve(int c, FiguraP[] figuras) {
-        int[] map = new int[c]; // 0 2 3 4 1 0 0 ... (c alturas)
-
+    private static int[] solve(int c, Figura[] figuras) {
+        int[] mapa = new int[c]; // 0 2 3 4 1 0 0 ... (c alturas)
+        // O(F)
         for (int i = 0; i < figuras.length; i++) {
-            resolverFigura(map, figuras[i]);
+            resolverFigura(mapa, figuras[i]);
         }
-
-        return map;
+        return mapa;
     }
 
-    private static void resolverFigura(int[] map, FiguraP figura) {
-        // Hallar altura minima de caida
-        // X
-        // X X X
-        // 2 3 2 --> 3
-        int c = map.length;
-        int alturaMinima = map[figura.columna];
-        for (int j = 1; j <= 3; j++) { // 1 2 3 a la izqda
-            // saltamos columnas donde no hay piezas
-            boolean hayPieza = false;
-            for (int i = 0; i < 4; i++) {
-                if (figura.forma[i][j] == 1) {
-                    hayPieza = true;
-                    break;
-                }
-            }
-            if (!hayPieza) // ya no hay mas piezas aqui
-                break;
-            if (alturaMinima < map[j + figura.columna]) {
-                alturaMinima = map[j + figura.columna];
-            }
-        }
-        int alturaActual = alturaMinima;
-        // Detectar colision en altura minima de caida
-        while (colision(map, c, figura, alturaActual)) {
-            alturaActual++;
+    private static void resolverFigura(int[] mapa, Figura figura) {
+        // Hallamos alturas del mapa minimas y maximas en el area de caida (donde la
+        // pieza no es 0)
+        int alturaMinima = Integer.MAX_VALUE;
+        int alturaMaxima = 0;
+        // O(1)
+        for (int col = 0; col < 4; col++) {
+            if (figura.alturasMaximas[col] == 0)
+                break; // las piezas van de izqda a dcha, podemos hacer break temprano
+
+            if (alturaMinima > mapa[col + figura.columna])
+                alturaMinima = mapa[col + figura.columna];
+            if (alturaMaxima < mapa[col + figura.columna])
+                alturaMinima = mapa[col + figura.columna];
         }
 
-        // Actualizar las alturas de map
-        // 1. Hallar las alturas maximas con 1 en cada columna
-        // 2. Actualizar map[j] = alturaMax[j] + alturaActual ( -1 )
+        // Normalmente aquí sale la alturaMinima, sin embargo si hay huecos raros tipo 1
+        // 100 1 en el mapa, una pieza por muy irregular que sea
+        // nunca será de más de 3 de alto, así que podemos aprovechar solo 3 (creo que
+        // realmente 2 porque los palos verticales solo ocupan 1 col.) hacia abajo
+        int altura = Math.max(alturaMinima, alturaMaxima - 3);
+        // Refinamos altura de caida detectando colisiones y ascendiendo
+        // O(1) por lo anterior, seguramente nunca habrá más de 4 iteraciones, aunque no
+        // lo comprobé
+        while (colision(mapa, figura, altura)) {
+            altura++;
+        }
 
-        // O O O A = 3; C = {2, 1, 3}
-        // O X matriz[1][0] = matriz[1][1] = matriz[1][2] = matriz[0][1] = 1;
-        // X X
-        // X X X
-        // 2 1 3 alturas mapa
-        // 2 2 2 altura maximas pieza
-        // 3 altura actual
-        // 4 4 4
-        for (int j = 0; j < 4; j++) {
-            int alturaMas = 0;
-            for (int i = 0; i < 4; i++) {
-                if (figura.forma[i][j] == 0)
-                    continue;
-                alturaMas = i + 1;
-            }
-            if (alturaMas == 0)
-                continue;
-            map[figura.columna + j] = alturaActual + alturaMas;
+        // Actualizamos las alturas de las columnas del mapa
+        // O(1)
+        for (int col = 0; col < 4; col++) {
+            if (figura.alturasMaximas[col] == 0)
+                break;// las piezas van de izqda a dcha, podemos hacer break temprano
+
+            // La nueva altura será la altura de caida + la altura máxima de la pieza en
+            // esa columna
+            mapa[figura.columna + col] = altura + figura.alturasMaximas[col];
         }
     }
 
-    public static boolean colision(int[] map, int c, FiguraP figura, int alturaActual) {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                // O O O A = 3; C = {2, 1, 3}
-                // O X matriz[1][0] = matriz[1][1] = matriz[1][2] = matriz[0][1] = 1;
-                // X X
-                // X X X
-
-                // X
-                // O O X
-                // X O X
-                // X X X
-                if (figura.forma[i][j] == 0)
-                    continue; // si tenemos un 0, seguimos
-
-                if (map[figura.columna + j] >= i + alturaActual)
-                    return true;
-            }
+    public static boolean colision(int[] mapa, Figura figura, int altura) {
+        // O(1)
+        for (int col = 0; col < 4; col++) {
+            // HAY COLISION SI:
+            // Hay al menos una pieza en esta columna Y
+            // La altura del mapa en esa columna sobrepasa o iguala la suma de la latura
+            // actual más la altura mínima que necesita la pieza en esta columna
+            if ((figura.alturasMinimas[col] > 0) &&
+                    (mapa[col + figura.columna] >= figura.alturasMinimas[col] + altura))
+                return true;
         }
         return false;
     }

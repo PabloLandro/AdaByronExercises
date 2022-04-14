@@ -1,35 +1,16 @@
 import java.io.*;
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        // read file
-        File file = new File("input.txt");
         // read lines of file as array of ints
-        int[] lines = readFile(file);
-        // create new file
-        File output = new File("output.txt");
-        // create new file writer
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter(output);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        int[] lines = readInput();
+
         // iterate over lines
         for (int line : lines) {
-            //write results of poirot function to file as string in single line
-            try {
-                writer.write(poirot(line) + "\n");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        // close writer
-        try {
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(poirot(line) +"");
+
         }
     }
 
@@ -39,7 +20,7 @@ public class Main {
         //iterate over n
         for (int i = 1; i <= n; i++) {
             //increment count if (2 to the power of i) - 1 is divisible by 7
-            if (((int) Math.pow(2, i) - 1) % 7 == 0) {
+            if (((long) Math.pow(2, i) - 1) % 7 == 0) {
                 count++;
             }
         }
@@ -47,19 +28,13 @@ public class Main {
         return count;
     }
 
-    static int[] readFile(File file){
+    /*static int[] readInput(){
         int[] lines = null;
-        // create reader
-        FileReader fileReader = null;
-        try {
-            fileReader = new FileReader(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
         // create buffered reader
         BufferedReader bufferedReader = null;
         try {
-            bufferedReader = new BufferedReader(fileReader);
+            bufferedReader = new BufferedReader(new InputStreamReader(System.in));
             // read first line as int n
             int n = Integer.parseInt(bufferedReader.readLine());
             // create array of n ints
@@ -78,5 +53,20 @@ public class Main {
             e.printStackTrace();
         }
         return lines;
+    }*/
+
+    static int[] readInput(){
+        int[] lines = null;
+        Scanner in = new Scanner(System.in);
+        int size = in.nextInt();
+        lines = new int[size];
+        for (int i = 0; i < size; i++) {
+            lines[i] = in.nextInt();
+        }
+
+        in.close();
+
+        return lines;
     }
+
 }

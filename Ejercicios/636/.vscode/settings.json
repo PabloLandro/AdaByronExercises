@@ -29,7 +29,7 @@
     "**/.vscode/**"
   ],
   "files.associations": {
-    "iostream": "cpp",
-    "unordered_map": "cpp"
+    "unordered_map": "cpp",
+    "iostream": "cpp"
   }
 }

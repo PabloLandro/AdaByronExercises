@@ -26,9 +26,9 @@ int main () {
 
         int j = 1;
         while (j < n-2 && abs(p2-2*arr[j+1]-p1) <= abs(p1-p2)) {
+            j++;
             p1 += arr[j];
             p2 -= arr[j];
-            j++;
         }
 
         int minimo = diff(p0, p1, p2);
@@ -43,15 +43,15 @@ int main () {
             }
             if (p2 > p1) {
                 while (j < n-2 && abs(p2-2*arr[j+1]-p1) <= abs(p1-p2)) {
+                    j++;
                     p1 += arr[j];
                     p2 -= arr[j];
-                    j++;
                 }
-            } else {
+            } else if (p2 < p1){
                 while (j > i+1 && abs(p2+2*arr[j+1]-p1) <= abs(p1-p2)) {
+                    j--;
                     p1 -= arr[j];
                     p2 += arr[j];
-                    j--;
                 }
             }
             minimo = min(minimo, diff(p0, p1, p2));

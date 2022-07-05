@@ -1,36 +1,58 @@
-#include <iostream>
-#include <math.h>
+#include <bits/stdc++.h>
 
 using namespace std;
 
 int D;
 
-long long siguienteNumero(long long in) {
-    string aux = to_string(in);
-    for (int i = 0; i < aux.length(); i++) {
-        if (aux.at(i) == D+48) {
-            in += pow(10, aux.length()-i-1);
+string siguienteNumero(string in) {
+    for (int i = in.length()-1; i >= 0; i--) {
+        if (in.at(i) >= D+48) {
+            int acarreo = 1;
+            for (int j = i; j >= 0 && acarreo == 1; j--) {
+                int aux = in.at(j) + 1;
+                if (aux == 9) {
+                    acarreo = 1;
+                    aux = 0;
+                } else {
+                    acarreo = 0;
+                }
+                in.replace(j, 1, string(1, (char)aux));
+            }
         }
     }
     return in;
 }
 
+
+string fromDeci(string& res, int base, long inputNum)
+{
+    int index = 0;
+
+    while (inputNum > 0) {
+        res.push_back(48+(inputNum % base));
+        index++;
+        inputNum /= base;
+    }
+ 
+    reverse(res.begin(), res.end());
+ 
+    return res;
+}
+
 int main () {
 
     while (true) {
-        int N;
+        long N;
         cin >> N >> D;
         if (N == 0 && D == 0)
             return 0;
-        long long numero = 0;
-        while (N-- != 0) {
-            numero++;
-            numero = siguienteNumero(numero);
-            cout << "numero: " << numero << "\n";
-        }
-
-        cout << numero << "\n";
         
+        string base;
+        fromDeci(base, 9, N);
+
+
+        
+        cout << siguienteNumero(base) << "\n";       
     }
 
 }

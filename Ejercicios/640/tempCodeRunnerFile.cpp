@@ -1,1 +1,0 @@
-            cout << "numero: " << numero << "\n";

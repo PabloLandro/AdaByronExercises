@@ -8,9 +8,11 @@ int N, K;
 vector<int> peldanos;
 int elements;
 
-int fact (int x) {
-    if (x == 0) return 1;
-    return x * fact(x-1);
+long long fact (long long x) {
+    if (x <= 0) return 1;
+    long long f = fact(x-1);
+    long long out = x * f;
+    return out;
 }
 
 int solve (int index) {
@@ -19,9 +21,8 @@ int solve (int index) {
         elements = 0;
     }
     if (index == peldanos.size()-1) {   //Ultimo caso
-        //cout << "elements: " << elements << "\n";
-        //cout << "return: " << (fact(elements+N)) / (fact(N)) << "\n";
-        //cout << "fact(" << elements + N << "): " << fact(elements+N) << "\tfact(" << N << "): " << fact(N) << "\n";
+        //cout << fact(elements+N) << "\n";
+        //cout << fact(N) << "\n";
         return (fact(elements+N)) / (fact(N));
     }
     int paso = peldanos[index];
@@ -34,7 +35,7 @@ int solve (int index) {
         elements++;
         N -= paso;
     }
-    elements -= aux / paso;
+    elements -= (aux / paso)+1;
     N = aux;    // Recuperamos el valor inicial
     return total;
 }
